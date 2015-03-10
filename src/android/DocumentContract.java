@@ -124,7 +124,7 @@ public class DocumentContract extends CordovaPlugin {
                 return;
             }
 
-            cursor = cordova.getActivity().getContentResolver().query(uri, null, null, null, null);
+            cursor = cordova.getActivity().getContentResolver().query(uri, getColumns(args), null, null, null);
             if (null != cursor && cursor.moveToFirst()) {
                 for (String col : cursor.getColumnNames())
                     response.put(col, cursor.getString(cursor.getColumnIndex(col)));
@@ -142,6 +142,30 @@ public class DocumentContract extends CordovaPlugin {
                 return null;
 
             return Uri.parse(args.getString("uri"));
+        } catch (JSONException je) {
+            return null;
+        }
+    }
+
+    private String[] getColumns(JSONObject args) {
+        try {
+            String[] projection;
+            JSONArray cols;
+            int len;
+
+            if (!args.has("columns"))
+                return null;
+
+            cols = args.getJSONArray("columns");
+            len = cols.length();
+            if (len > 0) {
+                projection = new String[len];
+                for (int i = 0; i < len; i++)
+                    projection[i] = cols.getString(i);
+                return projection;
+            }
+
+            return null;
         } catch (JSONException je) {
             return null;
         }
