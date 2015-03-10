@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+	id="com.danjarvis.document-contract"
+	version="0.1.0">
+	<name>DocumentContract</name>
+	<description>Cordova plugin to interact with an Android Document Provider.</description>
+	<license>MIT</license>
+	<keywords>cordova,content,provider,contract,document,android,file</keywords>
+	<js-module src="www/DocumentContract.js" name="DocumentContract">
+		<clobbers target="DocumentContract" />
+	</js-module>
+	<platform name="android">
+		<config-file target="res/xml/config.xml" parent="/*">
+			<feature name="DocumentContract">
+				<param name="android-package" value="com.danjarvis.documentcontract.DocumentContract" />
+			</feature>
+		</config-file>
+		<source-file src="src/android/DocumentContract.java" target-dir="src/com/danjarvis/documentcontract" />
+	</platform>
+</plugin>
