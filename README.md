@@ -34,10 +34,6 @@ getContract({
 
 Resolves a content URI and retrieves a contract object.
 
-params:
-```js
-```
-
 An Object of key/value pairs will get passed to the `success` callback (keys will be`columns` that returned a value).
 
 If `columns` is not specified, the query will return all available columns. This is not recommended as it is [inefficient](http://developer.android.com/reference/android/content/ContentResolver.html#query%28android.net.Uri,%20java.lang.String[],%20java.lang.String,%20java.lang.String[],%20java.lang.String%29).
