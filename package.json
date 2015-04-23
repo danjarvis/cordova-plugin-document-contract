@@ -1,6 +1,6 @@
 {
   "name": "DocumentContract",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Cordova plugin to interact with an Android Document Provider.",
   "cordova": {
     "id": "com.danjarvis.document-contract",
