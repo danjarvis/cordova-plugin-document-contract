@@ -91,7 +91,7 @@ public class DocumentContract extends CordovaPlugin {
             is = contentResolver.openInputStream(uri);
             bs = new ByteArrayOutputStream();
 
-            buffer = new byte[8192];
+            buffer = new byte[524288];
             while ((read = is.read(buffer, 0, buffer.length)) != -1) {
                 bs.write(buffer, 0, read);
             }
