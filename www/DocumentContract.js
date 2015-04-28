@@ -19,6 +19,18 @@
       }, 'DocumentContract', 'getData', [params]);
   };
 
+  DocumentContract.prototype.createFile = function(params, success, error) {
+    return cordova.exec(
+      function(data) {
+        if ('undefined' === typeof data || null === data)
+          error('Failed to create file.');
+        else
+          success(data);
+      }, function(err) {
+        error(err);
+      }, 'DocumentContract', 'createFile', [params]);
+  };
+
   DocumentContract.prototype.getContract = function(params, success, error) {
     return cordova.exec(
       function(data) {
