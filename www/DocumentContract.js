@@ -7,18 +7,6 @@
   var DocumentContract = function() {
   };
 
-  DocumentContract.prototype.getData = function(params, success, error) {
-    return cordova.exec(
-      function(data) {
-        if ('undefined' === typeof data || null === data)
-          error('Failed to obtain stream data.');
-        else
-          success(data);
-      }, function(err) {
-        error(err);
-      }, 'DocumentContract', 'getData', [params]);
-  };
-
   DocumentContract.prototype.createFile = function(params, success, error) {
     return cordova.exec(
       function(data) {

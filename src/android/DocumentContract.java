@@ -6,7 +6,6 @@
 package com.danjarvis.documentcontract;
 
 import java.io.InputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -32,20 +31,7 @@ public class DocumentContract extends CordovaPlugin {
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         final CallbackContext cb = callbackContext;
         final JSONObject queryArgs;
-        if (action.equals("getData")) {
-            queryArgs = args.getJSONObject(0);
-            if (null == queryArgs) {
-                cb.error(INVALID_PARAMS_ERROR);
-                return false;
-            }
-
-            cordova.getThreadPool().execute(new Runnable() {
-                public void run() {
-                    getData(queryArgs, cb);
-                }
-            });
-            return true;
-        } else if (action.equals("createFile")) {
+        if (action.equals("createFile")) {
             queryArgs = args.getJSONObject(0);
             if (null == queryArgs) {
                 cb.error(INVALID_PARAMS_ERROR);
@@ -74,52 +60,6 @@ public class DocumentContract extends CordovaPlugin {
         }
 
         return false;
-    }
-
-    /**
-     * Gets the file data for the provided content URI.
-     *
-     * @return byte[] of file data. This will pass through as an ArrayBuffer
-     *         in the JavaScript plugin.
-     */
-    private void getData(JSONObject args, CallbackContext callback) {
-        try {
-            Uri uri;
-            ContentResolver contentResolver;
-            InputStream is;
-            ByteArrayOutputStream bs;
-            byte[] buffer;
-            int read = 0;
-
-            uri = getUri(args);
-            if (null == uri || !(uri.getScheme().equals(ContentResolver.SCHEME_CONTENT))) {
-                callback.error(INVALID_URI_ERROR);
-                return;
-            }
-
-            contentResolver = cordova.getActivity().getContentResolver();
-            if (null == contentResolver) {
-                callback.error("Failed to get ContentResolver object.");
-                return;
-            }
-
-            is = contentResolver.openInputStream(uri);
-            bs = new ByteArrayOutputStream();
-
-            buffer = new byte[32768];
-            while ((read = is.read(buffer, 0, buffer.length)) != -1) {
-                bs.write(buffer, 0, read);
-            }
-
-            is.close();
-            callback.success(bs.toByteArray());
-
-            bs.close();
-        } catch (FileNotFoundException fe) {
-            callback.error(fe.getMessage());
-        } catch (IOException ie) {
-            callback.error(ie.getMessage());
-        }
     }
 
     /**
