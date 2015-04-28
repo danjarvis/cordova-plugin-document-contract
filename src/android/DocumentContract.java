@@ -91,14 +91,21 @@ public class DocumentContract extends CordovaPlugin {
             is = contentResolver.openInputStream(uri);
             bs = new ByteArrayOutputStream();
 
-            buffer = new byte[524288];
+            buffer = new byte[32768];
             while ((read = is.read(buffer, 0, buffer.length)) != -1) {
                 bs.write(buffer, 0, read);
             }
 
+            is.close();
             callback.success(bs.toByteArray());
 
             bs.close();
+        } catch (FileNotFoundException fe) {
+            callback.error(fe.getMessage());
+        } catch (IOException ie) {
+            callback.error(ie.getMessage());
+        }
+    }
             is.close();
         } catch (FileNotFoundException fe) {
             callback.error(fe.getMessage());
