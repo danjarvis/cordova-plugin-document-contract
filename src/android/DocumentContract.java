@@ -7,6 +7,7 @@ package com.danjarvis.documentcontract;
 
 import java.io.InputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -15,6 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.DocumentsContract.*;
@@ -40,6 +42,19 @@ public class DocumentContract extends CordovaPlugin {
             cordova.getThreadPool().execute(new Runnable() {
                 public void run() {
                     getData(queryArgs, cb);
+                }
+            });
+            return true;
+        } else if (action.equals("createFile")) {
+            queryArgs = args.getJSONObject(0);
+            if (null == queryArgs) {
+                cb.error(INVALID_PARAMS_ERROR);
+                return false;
+            }
+
+            cordova.getThreadPool().execute(new Runnable() {
+                public void run() {
+                    createFile(queryArgs, cb);
                 }
             });
             return true;
@@ -106,7 +121,53 @@ public class DocumentContract extends CordovaPlugin {
             callback.error(ie.getMessage());
         }
     }
+
+    /**
+     * Creates a new file from the data resolved through the provided content URI.
+     *
+     * @return name of created file (residing at cordova.file.dataDirectory).
+     */
+    private void createFile(JSONObject args, CallbackContext callback) {
+        try {
+            Uri uri;
+            String fileName;
+            ContentResolver contentResolver;
+            InputStream is;
+            FileOutputStream fs;
+            byte[] buffer;
+            int read = 0;
+
+            uri = getUri(args);
+            if (null == uri || !(uri.getScheme().equals(ContentResolver.SCHEME_CONTENT))) {
+                callback.error(INVALID_URI_ERROR);
+                return;
+            }
+
+            fileName = getFileName(args);
+            if (null == fileName) {
+                callback.error(INVALID_PARAMS_ERROR);
+                return;
+            }
+
+            contentResolver = cordova.getActivity().getContentResolver();
+            if (null == contentResolver) {
+                callback.error("Failed to get ContentResolver object.");
+                return;
+            }
+
+            is = contentResolver.openInputStream(uri);
+            fs = cordova.getActivity().openFileOutput(fileName, Context.MODE_PRIVATE);
+
+            buffer = new byte[32768];
+            while ((read = is.read(buffer, 0, buffer.length)) != -1) {
+                fs.write(buffer, 0, read);
+            }
+
+            fs.close();
+            fs.flush();
             is.close();
+
+            callback.success(fileName);
         } catch (FileNotFoundException fe) {
             callback.error(fe.getMessage());
         } catch (IOException ie) {
@@ -149,6 +210,17 @@ public class DocumentContract extends CordovaPlugin {
                 return null;
 
             return Uri.parse(args.getString("uri"));
+        } catch (JSONException je) {
+            return null;
+        }
+    }
+
+    private String getFileName(JSONObject args) {
+        try {
+            if (!args.has("fileName"))
+                return null;
+
+            return args.getString("fileName");
         } catch (JSONException je) {
             return null;
         }
