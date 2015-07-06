@@ -4,7 +4,7 @@
     "cordova_name": "DocumentContract",
     "description": "Cordova plugin to interact with an Android Document Provider.",
     "cordova": {
-      "id": "com.danjarvis.document-contract",
+      "id": "cordova-plugin-document-contract",
       "platforms": [
         "android"
       ]
