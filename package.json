@@ -1,5 +1,5 @@
 {
-    "version": "0.3.0",
+    "version": "0.4.0",
     "name": "cordova-plugin-document-contract",
     "cordova_name": "DocumentContract",
     "description": "Cordova plugin to interact with an Android Document Provider.",
