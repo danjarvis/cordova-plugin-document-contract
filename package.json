@@ -1,7 +1,6 @@
 {
     "version": "0.4.0",
     "name": "cordova-plugin-document-contract",
-    "cordova_name": "DocumentContract",
     "description": "Cordova plugin to interact with an Android Document Provider.",
     "cordova": {
       "id": "cordova-plugin-document-contract",
@@ -9,15 +8,20 @@
         "android"
       ]
     },
-    "license": "MIT",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/danjarvis/cordova-plugin-document-contract"
+    },
     "keywords": [
         "ecosystem:cordova",
         "content",
         "provider",
         "contract",
         "document",
-        "android",
+        "cordova-android",
         "file"
     ],
+    "author": "Dan Jarvis",
+    "license": "MIT",
     "engines": []
 }
