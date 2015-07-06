@@ -1,6 +1,6 @@
 {
     "version": "0.3.0",
-    "name": "document-contract",
+    "name": "cordova-plugin-document-contract",
     "cordova_name": "DocumentContract",
     "description": "Cordova plugin to interact with an Android Document Provider.",
     "cordova": {
@@ -11,7 +11,7 @@
     },
     "license": "MIT",
     "keywords": [
-        "cordova",
+        "ecosystem:cordova",
         "content",
         "provider",
         "contract",

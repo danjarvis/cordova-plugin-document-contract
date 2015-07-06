@@ -1,5 +1,5 @@
-Document Contract
-=================
+cordova-plugin-document-contract
+================================
 
 Android document / media provider plugin for [Cordova](http://cordova.apache.org)
 
@@ -8,11 +8,11 @@ Installation
 
 Install through the Cordova plugin repository:
 
-`cordova plugin add com.danjarvis.document-contract`
+`cordova plugin add cordova-plugin-document-contract`
 
 Install directly from github:
 
-`cordova plugin add https://github.com/danjarvis/document-contract.git`
+`cordova plugin add https://github.com/danjarvis/cordova-plugin-document-contract.git`
 
 
 Methods
