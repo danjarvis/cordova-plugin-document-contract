@@ -24,6 +24,9 @@ The plugin exposes two functions for working with a document/media provider.
 getContract({
     uri: 'content://com.foo.bar/xyz',  // content URI (required)
     columns: ['_display_name']         // projection of columns (optional)
+    where: '_display_name =\'name\''   // Search results (optional)
+    sort: '_display_name ASC'          // Sort results (optional)
+    unique: true | false               // Array => false, Object => true (default false)
   },
   success,                             // success callback
   error);                              // error callback

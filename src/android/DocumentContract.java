@@ -1,6 +1,6 @@
 /**
  * Cordova Document Contract Plugin
- *
+ * <p>
  * (c) Dan Jarvis 2015 :: License MIT
  */
 package com.danjarvis.documentcontract;
@@ -9,6 +9,9 @@ import java.io.InputStream;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -124,21 +127,38 @@ public class DocumentContract extends CordovaPlugin {
         try {
             Uri uri;
             Cursor cursor;
-            JSONObject response = new JSONObject();
+            JSONArray results = new JSONArray();
 
             uri = getUri(args);
             if (null == uri || !(uri.getScheme().equals(ContentResolver.SCHEME_CONTENT))) {
                 callback.error(INVALID_URI_ERROR);
                 return;
             }
-
-            cursor = cordova.getActivity().getContentResolver().query(uri, getColumns(args), null, null, null);
-            if (null != cursor && cursor.moveToFirst()) {
-                for (String col : cursor.getColumnNames())
-                    response.put(col, cursor.getString(cursor.getColumnIndex(col)));
+            Search search = getSelectionClause(args);
+            cursor = cordova.getActivity().getContentResolver().query(uri, getColumns(args), search!= null ? search.getWhere() : null, search!= null ? search.getArgs() : null, getSortOrder(args));
+            if (null != cursor) {
+                if (cursor.moveToFirst()) {
+                    do {
+                        JSONObject tmp = new JSONObject();
+                        for (String col : cursor.getColumnNames()) {
+                            tmp.put(col, cursor.getString(cursor.getColumnIndex(col)));
+                        }
+                        results.put(tmp);
+                    } while (!isSingle(args) && cursor.moveToNext());
+                }
             }
             cursor.close();
-            callback.success(response);
+            if (results.length() >= 1 && !isSingle(args)) {
+                callback.success(results);
+            } else if (results.length() == 1 && isSingle(args)) {
+                callback.success(results.getJSONObject(0));
+            } else {
+                if(isSingle(args)){
+                    callback.success(new JSONObject());
+                }else{
+                   callback.success(results);
+                }
+            }
         } catch (JSONException je) {
             callback.error(je.getMessage());
         }
@@ -166,6 +186,49 @@ public class DocumentContract extends CordovaPlugin {
         }
     }
 
+    private Search getSelectionClause(JSONObject args) {
+        try {
+            if (!args.has("where")) {
+                return null;
+            }
+            Pattern p = Pattern.compile("'(.*?)'");
+            String where = args.getString("where");
+            ArrayList<String> argsArray= new ArrayList<>();
+            Matcher m = p.matcher(where);
+            System.out.println(where);
+            while (m.find()) {
+                where = where.replaceFirst( m.group(0),"?");
+                argsArray.add(m.group(1));
+            }
+            Search search = new Search();
+            search.setArgs(argsArray);
+            search.setWhere(where);
+            return search;
+        } catch (JSONException je) {
+            return null;
+        }
+    }
+
+    private String getSortOrder(JSONObject args) {
+        try {
+            if (!args.has("sort"))
+                return null;
+            return args.getString("sort");
+        } catch (JSONException je) {
+            return null;
+        }
+    }
+
+    private boolean isSingle(JSONObject args) {
+        try {
+            if (!args.has("unique"))
+                return false;
+            return args.getBoolean("unique");
+        } catch (JSONException je) {
+            return false;
+        }
+    }
+
     private String[] getColumns(JSONObject args) {
         try {
             String[] projection;
@@ -187,6 +250,27 @@ public class DocumentContract extends CordovaPlugin {
             return null;
         } catch (JSONException je) {
             return null;
+        }
+    }
+
+    private class Search {
+        private String where;
+        private ArrayList<String> args;
+
+        public String getWhere() {
+            return where;
+        }
+
+        public void setWhere(String where) {
+            this.where = where;
+        }
+
+        public String[] getArgs() {
+            return args == null ? null : args.toArray(new String[args.size()]);
+        }
+
+        public void setArgs(ArrayList<String> args) {
+            this.args = args;
         }
     }
 }
